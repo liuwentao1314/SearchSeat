@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>婚礼座位查询</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      text-align: center;
+      padding: 40px 20px;
+      background: #f9f9f9;
+    }
+    h1 {
+      color: #333;
+    }
+    input {
+      width: 80%;
+      padding: 12px;
+      font-size: 16px;
+      margin-top: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #ff6b81;
+      color: white;
+    }
+    #result {
+      margin-top: 30px;
+      font-size: 20px;
+      color: #222;
+    }
+    .card {
+      background: white;
+      margin: 10px auto;
+      padding: 15px;
+      border-radius: 10px;
+      max-width: 300px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎉 婚礼座位查询</h1>
+  <p>请输入您的姓名或手机号</p>
+
+  <input id="keyword" placeholder="例如：张三 或 8888">
+  <br>
+  <button onclick="search()">查询</button>
+
+  <div id="result"></div>
+
+  <script>
+    const data = [
+      { name: "张三", phone: "18888888888", table: "5桌" },
+      { name: "李四", phone: "18777777777", table: "3桌" },
+      { name: "王五", phone: "", table: "3桌" },
+      { name: "赵六", phone: "18555555555", table: "2桌" }
+    ];
+
+    function search() {
+      const keyword = document.getElementById("keyword").value.trim();
+      const resultDiv = document.getElementById("result");
+
+      if (!keyword) {
+        resultDiv.innerHTML = "请输入姓名或手机号";
+        return;
+      }
+
+      const results = data.filter(item => {
+        return item.name.includes(keyword) ||
+               item.phone.includes(keyword);
+      });
+
+      if (results.length === 0) {
+        resultDiv.innerHTML = "❌ 未找到，请联系工作人员";
+        return;
+      }
+
+      let html = "";
+      results.forEach(item => {
+        html += `
+          <div class="card">
+            <div><strong>${item.name}</strong></div>
+            <div>👉 ${item.table}</div>
+          </div>
+        `;
+      });
+
+      resultDiv.innerHTML = html;
+    }
+  </script>
+
+</body>
+</html>
