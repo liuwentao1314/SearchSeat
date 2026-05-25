@@ -1,102 +1,337 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>婚礼座位查询</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      text-align: center;
-      padding: 40px 20px;
-      background: #f9f9f9;
-    }
-    h1 {
-      color: #333;
-    }
-    input {
-      width: 80%;
-      padding: 12px;
-      font-size: 16px;
-      margin-top: 20px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      background: #ff6b81;
-      color: white;
-    }
-    #result {
-      margin-top: 30px;
-      font-size: 20px;
-      color: #222;
-    }
-    .card {
-      background: white;
-      margin: 10px auto;
-      padding: 15px;
-      border-radius: 10px;
-      max-width: 300px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>❤ 婚礼座位查询 ❤</title>
+
+<style>
+/* 全局复位与重工红丝绒渐变背景 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "STKaiti", "KaiTi", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: radial-gradient(circle at center, #bd1e2e 0%, #6b0b14 100%);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 屏幕背景中式暗纹切图 */
+body::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0; left: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M9 24c0-8.284 6.716-15 15-15s15 6.716 15 15-6.716 15-15 15S9 32.284 9 24z' fill='%23ffffff' fill-opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* --- 核心：花瓣与囍字飘落动效层 --- */
+.petal-container {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.petal {
+    position: absolute;
+    display: block;
+    pointer-events: none;
+    user-select: none;
+    animation-linear-delay: true;
+}
+
+/* 各类落物的动画轨迹 */
+@keyframes fall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 0.9; }
+    100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+}
+
+/* --- 中式请柬主卡片 --- */
+.invitation-card {
+    position: relative;
+    z-index: 10;
+    background: #fdfbf7; /* 宣纸白 */
+    border: 2px solid #dfba6b; /* 哑光金边 */
+    border-radius: 16px;
+    width: 88%;
+    max-width: 360px;
+    padding: 35px 25px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    box-sizing: border-box;
+}
+
+/* 内层古典细回字描边 */
+.invitation-card::after {
+    content: "";
+    position: absolute;
+    top: 6px; left: 6px; right: 6px; bottom: 6px;
+    border: 1px dashed rgba(223, 186, 107, 0.6);
+    border-radius: 12px;
+    pointer-events: none;
+}
+
+/* 顶部大红描金“囍”字，自带呼吸喜庆感 */
+.xi-logo {
+    font-size: 50px;
+    color: #ca1f32;
+    font-weight: bold;
+    line-height: 1;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 0px #dfba6b, -1px -1px 0px #dfba6b, 1px -1px 0px #dfba6b, -1px 1px 0px #dfba6b;
+    animation: xiPulse 2.5s infinite ease-in-out;
+}
+
+@keyframes xiPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); filter: drop-shadow(0 0 8px rgba(223,186,107,0.5)); }
+}
+
+/* 艺术字标题 */
+.main-title {
+    font-size: 26px;
+    color: #7a0c16;
+    font-weight: bold;
+    margin: 5px 0;
+    letter-spacing: 4px;
+}
+
+.sub-title {
+    font-size: 13px;
+    color: #a4845e;
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+}
+
+/* 典雅的输入框组 */
+.input-group {
+    margin-bottom: 16px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1.5px solid #dcd1bf;
+    border-radius: 30px;
+    font-size: 16px;
+    color: #4a321a;
+    text-align: center;
+    box-sizing: border-box;
+    background-color: #faf8f5;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+/* 输入框激活时的“烫金”效果 */
+.input-field:focus {
+    border-color: #c29d53;
+    background-color: #ffffff;
+    box-shadow: 0 0 12px rgba(194, 157, 83, 0.4);
+}
+
+.input-field::placeholder {
+    color: #c4b9a6;
+}
+
+/* 绸缎扫光特效按钮 */
+.action-btn {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #ca1f32 0%, #911220 100%);
+    color: #fceecb; /* 金字 */
+    border: 1px solid #750a14;
+    border-radius: 30px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(145, 18, 32, 0.4);
+    letter-spacing: 3px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+/* 模拟丝绸反光扫光特效 */
+.action-btn::before {
+    content: "";
+    position: absolute;
+    top: 0; left: -100%;
+    width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+    transform: skewX(-30deg);
+    animation: lightSweep 4s infinite linear;
+}
+
+@keyframes lightSweep {
+    0% { left: -100%; }
+    30%, 100% { left: 150%; }
+}
+
+.action-btn:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(145, 18, 32, 0.6);
+}
+
+/* --- 下方圣旨/画卷式动态查询结果框 --- */
+.result-container {
+    margin-top: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+}
+
+.result-container.open {
+    max-height: 150px;
+    margin-top: 20px;
+}
+
+.scroll-card {
+    background: linear-gradient(180deg, #fcedca 0%, #f7e0aa 100%); /* 金箔纸底色 */
+    border: 1px solid #d4b265;
+    border-left: 5px solid #ca1f32; /* 左侧红色轴封 */
+    border-radius: 6px;
+    padding: 15px;
+    color: #5c4126;
+    font-size: 15px;
+    line-height: 1.6;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+.guest-title {
+    font-size: 14px;
+    color: #8a653c;
+}
+.guest-highlight {
+    font-weight: bold;
+    color: #111;
+}
+.seat-badge {
+    display: block;
+    font-size: 22px;
+    color: #bc1627;
+    font-weight: bold;
+    margin-top: 6px;
+    letter-spacing: 1px;
+}
+</style>
 </head>
 <body>
 
-  <h1>🎉 婚礼座位查询</h1>
-  <p>请输入您的姓名或手机号</p>
+<div class="petal-container" id="petalContainer"></div>
 
-  <input id="keyword" placeholder="例如：张三 或 8888">
-  <br>
-  <button onclick="search()">查询</button>
+<div class="invitation-card">
+    <div class="xi-logo">囍</div>
+    <div class="main-title">婚礼座位查询</div>
+    <div class="sub-title">✨ 见证良缘 · 恭迎尊驾 ✨</div>
 
-  <div id="result"></div>
+    <div class="input-group">
+        <input type="text" id="guestName" class="input-field" placeholder="请输入您的贵姓大名" autocomplete="off" />
+    </div>
+    <button class="action-btn" onclick="executeSearch()">确 认 查 询</button>
 
-  <script>
-    const data = [
-      { name: "张三", phone: "18888888888", table: "5桌" },
-      { name: "李四", phone: "18777777777", table: "3桌" },
-      { name: "王五", phone: "", table: "3桌" },
-      { name: "赵六", phone: "18555555555", table: "2桌" }
+    <div class="result-container" id="resContainer">
+        <div class="scroll-card" id="scrollCard"></div>
+    </div>
+</div>
+
+<script>
+// 名单数据库（可随意扩充修改）
+const weddingDatabase = {
+    "张三": "VIP主桌 01号",
+    "李四": "挚友亲朋桌 03号",
+    "王五": "女方亲属桌 02号",
+    "赵六": "男方同学桌 05号"
+};
+
+// 1. 初始化全屏花瓣和囍字飘落特效
+function createPetals() {
+    const container = document.getElementById("petalContainer");
+    // 花瓣元素池：包含粉花瓣、红花瓣、金色小囍字
+    const types = [
+        { text: '🌸', size: 14 },
+        { text: '🌹', size: 12 },
+        { text: '囍', size: 10, color: 'rgba(212,175,55,0.6)' },
+        { text: '🌸', size: 16 },
+        { text: '🎉', size: 14 }
     ];
-
-    function search() {
-      const keyword = document.getElementById("keyword").value.trim();
-      const resultDiv = document.getElementById("result");
-
-      if (!keyword) {
-        resultDiv.innerHTML = "请输入姓名或手机号";
-        return;
-      }
-
-      const results = data.filter(item => {
-        return item.name.includes(keyword) ||
-               item.phone.includes(keyword);
-      });
-
-      if (results.length === 0) {
-        resultDiv.innerHTML = "❌ 未找到，请联系工作人员";
-        return;
-      }
-
-      let html = "";
-      results.forEach(item => {
-        html += `
-          <div class="card">
-            <div><strong>${item.name}</strong></div>
-            <div>👉 ${item.table}</div>
-          </div>
-        `;
-      });
-
-      resultDiv.innerHTML = html;
+    
+    const count = 25; // 屏幕同时存在的密集度
+    for (let i = 0; i < count; i++) {
+        const petal = document.createElement("div");
+        const type = types[Math.floor(Math.random() * types.length)];
+        
+        petal.className = "petal";
+        petal.innerText = type.text;
+        petal.style.fontSize = type.size + Math.random() * 8 + "px";
+        if (type.color) petal.style.color = type.color;
+        
+        // 随机分布
+        petal.style.left = Math.random() * 100 + "%";
+        petal.style.top = -Math.random() * 20 - 20 + "px";
+        
+        // 随机动画时长与延迟
+        const duration = 6 + Math.random() * 6;
+        const delay = Math.random() * -12;
+        petal.style.animation = `fall ${duration}s linear ${delay}s infinite`;
+        
+        container.appendChild(petal);
     }
-  </script>
+}
+
+// 2. 执行座位查询逻辑
+function executeSearch() {
+    const name = document.getElementById("guestName").value.trim();
+    const container = document.getElementById("resContainer");
+    const card = document.getElementById("scrollCard");
+
+    if (!name) {
+        card.innerHTML = `<span style="color:#a61b29;">💡 请输入姓名再查询哦</span>`;
+        container.classList.add("open");
+        return;
+    }
+
+    if (weddingDatabase[name]) {
+        card.innerHTML = `
+            <div class="guest-title">尊贵的贤朋 <span class="guest-highlight">${name}</span>：</div>
+            <div>阖府统请，您的席设在：</div>
+            <span class="seat-badge">🌹 ${weddingDatabase[name]}</span>
+        `;
+    } else {
+        card.innerHTML = `
+            <div style="color:#736252; font-size:14px;">
+                🔍 抱歉，未找到 <b>${name}</b> 的席位。<br>请确认字是否有误，或联系现场知客人员。
+            </div>
+        `;
+    }
+    
+    // 触发圣旨画卷徐徐下拉的顺滑动画
+    container.classList.remove("open");
+    void container.offsetWidth; // 强制重绘触发动效
+    container.classList.add("open");
+}
+
+// 监听手机虚拟键盘的“前往/回车”键
+document.getElementById("guestName").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        executeSearch();
+        document.getElementById("guestName").blur(); // 自动收起手机键盘
+    }
+});
+
+// 页面加载完成后立即下起花瓣雨
+window.addEventListener("DOMContentLoaded", createPetals);
+</script>
 
 </body>
 </html>
