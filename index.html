@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>❤ 婚礼座位查询 ❤</title>
 
+<script src="https://unpkg.com/pinyin-pro@3.18.3/dist/index.js"></script>
+
 <style>
 body {
     margin: 0;
@@ -59,8 +61,8 @@ body::before {
     border: 2px solid #dfba6b;
     border-radius: 16px;
     width: 88%;
-    max-width: 360px;
-    padding: 35px 25px;
+    max-width: 380px;
+    padding: 30px 22px 25px 22px;
     text-align: center;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
     box-sizing: border-box;
@@ -76,22 +78,39 @@ body::before {
 }
 
 .xi-logo {
-    font-size: 50px;
+    font-size: 46px;
     color: #ca1f32;
     font-weight: bold;
     line-height: 1;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     text-shadow: 1px 1px 0px #dfba6b, -1px -1px 0px #dfba6b, 1px -1px 0px #dfba6b, -1px 1px 0px #dfba6b;
     animation: xiPulse 2.5s infinite ease-in-out;
 }
 
 @keyframes xiPulse {
     0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.06); filter: drop-shadow(0 0 8px rgba(223,186,107,0.5)); }
+    50% { transform: scale(1.05); filter: drop-shadow(0 0 8px rgba(223,186,107,0.5)); }
 }
 
+.couple-names {
+    font-size: 16px;
+    color: #a4845e;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+.couple-names .name {
+    color: #8a121e;
+    font-weight: bold;
+    font-size: 17px;
+}
+.couple-names .groomsman, .couple-names .bridesmaid { color: #b89759; font-size: 12px; margin-right: 2px; font-weight: normal; }
+
 .main-title {
-    font-size: 26px;
+    font-size: 24px;
     color: #7a0c16;
     font-weight: bold;
     margin: 5px 0;
@@ -100,9 +119,9 @@ body::before {
 
 .sub-title {
     font-size: 13px;
-    color: #a4845e;
-    margin-bottom: 25px;
-    letter-spacing: 2px;
+    color: #bfa37a;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
 }
 
 .input-group {
@@ -170,9 +189,10 @@ body::before {
     box-shadow: 0 2px 8px rgba(145, 18, 32, 0.6);
 }
 
-/* --- 【核心优化】GPU 硬件加速丝滑滑出效果 --- */
+/* --- 【还原】经典金箔大卷轴外容器（启用硬件加速，支持滑动） --- */
 .result-container {
-    margin-top: 20px;
+    margin-top: 0;
+    max-height: 0px;
     transform: scaleY(0);
     opacity: 0;
     transform-origin: top;
@@ -181,39 +201,60 @@ body::before {
 }
 
 .result-container.open {
-    transform: scaleY(1);
     opacity: 1;
+    transform: scaleY(1);
+    max-height: 230px; /* 控制结果区域最高高度 */
+    margin-top: 18px;
 }
 
+/* 一整块连续的金箔宣纸大轴面 */
 .scroll-card {
     background: linear-gradient(180deg, #fcedca 0%, #f7e0aa 100%);
     border: 1px solid #d4b265;
     border-left: 5px solid #ca1f32;
     border-radius: 6px;
-    padding: 15px;
-    color: #5c4126;
-    font-size: 15px;
-    line-height: 1.6;
     box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-    text-align: left; /* 改为靠左对齐，排版更像宣纸内页 */
+    max-height: 230px;
+    overflow-y: auto; /* 多个结果时在此大卡片内部滚动 */
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch; /* 保证iOS上滑动如丝般顺滑 */
+}
+
+/* --- 大卷轴内部：每一个结果的排版样式 --- */
+.match-item {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px dashed rgba(166, 27, 41, 0.25); /* 多个结果间的优雅中式红虚线 */
+}
+.match-item:last-child {
+    border-bottom: none; /* 最后一项不要虚线 */
 }
 
 .guest-title {
     font-size: 14px;
     color: #8a653c;
+    line-height: 1.4;
 }
 .guest-highlight {
     font-weight: bold;
     color: #111;
+    font-size: 16px;
+}
+.phone-tail {
+    color: #1d5288; /* 雅致深蓝 */
+    font-weight: bold;
+    font-size: 14px;
+    font-family: "Helvetica Neue", sans-serif;
+    margin-left: 2px;
 }
 .seat-badge {
     display: block;
-    font-size: 22px;
+    font-size: 21px;
     color: #bc1627;
     font-weight: bold;
     margin-top: 6px;
     letter-spacing: 1px;
-    text-align: center; /* 桌号居中高亮 */
+    text-align: center; /* 席位始终保持居中醒目 */
 }
 </style>
 </head>
@@ -223,6 +264,13 @@ body::before {
 
 <div class="invitation-card">
     <div class="xi-logo">囍</div>
+    
+    <div class="couple-names">
+        <div><span class="groomsman">新郎</span><span class="name">杜宇聪</span></div>
+        <div style="color: #dfba6b; font-size: 14px;">❤</div>
+        <div><span class="bridesmaid">新娘</span><span class="name">史鑫淼</span></div>
+    </div>
+    
     <div class="main-title">婚礼座位查询</div>
     <div class="sub-title">✨ 见证良缘 · 恭迎尊驾 ✨</div>
 
@@ -237,12 +285,14 @@ body::before {
 </div>
 
 <script>
-const weddingDatabase = {
-    "张三": "VIP主桌 01号",
-    "李四": "挚友亲朋桌 03号",
-    "王五": "女方亲属桌 02号",
-    "赵六": "男方同学桌 05号"
-};
+// 【数据池】：支持完整的手机号（代码会自动截取最后4位）。如不填或留空，则不显示尾号。
+const weddingDatabase = [
+    { name: "张三", phone: "18700008888", seat: "VIP主桌 01号" },
+    { name: "张三", phone: "18800001234", seat: "VIP主桌 05号" },
+    { name: "李四", phone: "13900006666", seat: "挚友亲朋桌 03号" },
+    { name: "王五", phone: "",           seat: "女方亲属桌 02号" }, // 演示：没有提供手机号的情况
+    { name: "赵六", phone: "16633335555", seat: "男方同学桌 05号" }
+];
 
 function createPetals() {
     const container = document.getElementById("petalContainer");
@@ -275,32 +325,64 @@ function createPetals() {
 }
 
 function executeSearch() {
-    const name = document.getElementById("guestName").value.trim();
+    const inputRaw = document.getElementById("guestName").value.trim();
     const container = document.getElementById("resContainer");
     const card = document.getElementById("scrollCard");
 
-    if (!name) {
-        card.innerHTML = `<span style="color:#a61b29; display:block; text-align:center;">💡 请输入姓名再查询哦</span>`;
+    if (!inputRaw) {
+        card.innerHTML = `
+            <div style="padding: 15px; text-align:center;">
+                <span style="color:#a61b29;">💡 请输入姓名再查询哦</span>
+            </div>
+        `;
         container.classList.add("open");
         return;
     }
 
-    if (weddingDatabase[name]) {
-        card.innerHTML = `
-            <div class="guest-title">尊贵的贤朋 <span class="guest-highlight">${name}</span>：</div>
-            <div style="margin-top:4px;">阖府统请，您的席设在：</div>
-            <span class="seat-badge">🌹 ${weddingDatabase[name]}</span>
-        `;
+    // 模糊音匹配
+    const inputPinyin = pinyinPro.pinyin(inputRaw, { toneType: 'none', v: true }).replace(/\s+/g, '');
+
+    const matchedGuests = weddingDatabase.filter(guest => {
+        if (guest.name === inputRaw) return true;
+        const dbPinyin = pinyinPro.pinyin(guest.name, { toneType: 'none', v: true }).replace(/\s+/g, '');
+        return dbPinyin === inputPinyin;
+    });
+
+    if (matchedGuests.length > 0) {
+        let htmlContent = "";
+        
+        matchedGuests.forEach(guest => {
+            // 智能处理手机号后缀：有就截取后4位并套上括号，没有就变为空字符串
+            let tailDisplay = "";
+            if (guest.phone && String(guest.phone).trim().length >= 4) {
+                const pStr = String(guest.phone).trim();
+                const lastFour = pStr.substring(pStr.length - 4);
+                tailDisplay = `<span class="phone-tail">（${lastFour}）</span>`;
+            }
+
+            // 多个结果在同一个大卷轴内部以 match-item 形式平铺
+            htmlContent += `
+                <div class="match-item">
+                    <div class="guest-title">尊贵的贤朋 <span class="guest-highlight">${guest.name}</span>${tailDisplay}：</div>
+                    <div style="margin-top:4px; font-size:14px;">阖府统请，您的席设在：</div>
+                    <span class="seat-badge">🌹 ${guest.seat}</span>
+                </div>
+            `;
+        });
+        
+        card.innerHTML = htmlContent;
     } else {
         card.innerHTML = `
-            <div style="color:#736252; font-size:14px; text-align:center;">
-                🔍 抱歉，未找到 <b>${name}</b> 的席位。<br>请确认字是否有误，或联系现场知客人员。
+            <div style="padding: 20px 15px; color:#736252; font-size:14px; text-align:center;">
+                🔍 抱歉，未找到与 “<b>${inputRaw}</b>” 相关的席位。<br>请确认名字是否有误，或联系现场知客人员。
             </div>
         `;
     }
     
-    // 直接激活，配合 CSS transform 硬件加速，纵向展开丝滑无比
+    // 丝滑展现
     container.classList.add("open");
+    // 每次重新查询时，自动将列表滚动回顶部
+    card.scrollTop = 0;
 }
 
 document.getElementById("guestName").addEventListener("keypress", function(e) {
