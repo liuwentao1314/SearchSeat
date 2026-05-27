@@ -209,6 +209,7 @@ body::before {
 
 /* 一整块连续的金箔宣纸大轴面 */
 .scroll-card {
+    position: relative;
     background: linear-gradient(180deg, #fcedca 0%, #f7e0aa 100%);
     border: 1px solid #d4b265;
     border-left: 5px solid #ca1f32;
@@ -218,6 +219,62 @@ body::before {
     overflow-y: auto; /* 多个结果时在此大卡片内部滚动 */
     box-sizing: border-box;
     -webkit-overflow-scrolling: touch; /* 保证iOS上滑动如丝般顺滑 */
+}
+
+.scroll-card.can-scroll::after {
+    content: "↑ 上滑查看更多 ↑";
+    position: sticky;
+    left: 12px;
+    bottom: 10px;
+    display: block;
+    width: fit-content;
+    margin: -34px auto 8px auto;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(122, 12, 22, 0.88);
+    color: #fff4d9;
+    font-size: 12px;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+    pointer-events: none;
+    animation: swipeHint 1.8s ease-in-out infinite;
+}
+
+.scroll-card.scrolled::after {
+    content: "";
+    display: none;
+}
+
+.scroll-card.can-scroll::before {
+    content: "";
+    position: sticky;
+    left: 0;
+    bottom: 0;
+    display: block;
+    height: 42px;
+    margin-top: -42px;
+    background: linear-gradient(180deg, rgba(247,224,170,0) 0%, rgba(247,224,170,0.94) 75%);
+    pointer-events: none;
+}
+
+.scroll-card::-webkit-scrollbar {
+    width: 10px;
+}
+
+.scroll-card::-webkit-scrollbar-track {
+    background: rgba(122, 12, 22, 0.08);
+    border-radius: 999px;
+}
+
+.scroll-card::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #d54c5b 0%, #911220 100%);
+    border-radius: 999px;
+    border: 2px solid rgba(247,224,170,0.85);
+}
+
+@keyframes swipeHint {
+    0%, 100% { transform: translateY(0); opacity: 0.88; }
+    50% { transform: translateY(-4px); opacity: 1; }
 }
 
 /* --- 大卷轴内部：每一个结果的排版样式 --- */
@@ -239,13 +296,6 @@ body::before {
     font-weight: bold;
     color: #111;
     font-size: 16px;
-}
-.phone-tail {
-    color: #1d5288; /* 雅致深蓝 */
-    font-weight: bold;
-    font-size: 14px;
-    font-family: "Helvetica Neue", sans-serif;
-    margin-left: 2px;
 }
 .seat-badge {
     display: block;
@@ -285,14 +335,136 @@ body::before {
 </div>
 
 <script>
-// 【数据池】：支持完整的手机号（代码会自动截取最后4位）。如不填或留空，则不显示尾号。
-const weddingDatabase = [
-    { name: "张三", phone: "18700008888", seat: "VIP主桌 01号" },
-    { name: "张三", phone: "18800001234", seat: "VIP主桌 05号" },
-    { name: "李四", phone: "13900006666", seat: "挚友亲朋桌 03号" },
-    { name: "王五", phone: "",           seat: "女方亲属桌 02号" }, // 演示：没有提供手机号的情况
-    { name: "赵六", phone: "16633335555", seat: "男方同学桌 05号" }
+// 桌号在前，后面依次是该桌宾客姓名。
+const seatingSource = [
+    "1|杜光顺|杜光荣|杜光兴|曹玉洁|杜光华|杜洪滨",
+    "3|简江村|卢刚|何国胜|陈志平|邱芷海|王小华|蔡东华|李俊雄|王存举",
+    "5|孙洪涛|李方伶如|徐颢洋|高杉|王翊丞|纪荣达|钟文星|秦江龙|刘岩|任颖",
+    "7|刘玉琢|孙玉淳|杨主予|牛博宇|曹颖|赵雨涵|郁天扬|王旭|李佳星|范凯瑞",
+    "9|刘振梅|可燕君|王春荣|王淑艳|谢爱杰|于慧君|任淑梅|刘玉红|张静|胡彦秋",
+    "11|时晶|吴淑文|王玲|安郁尊|张雪秋|窦秀梅|于彦芝|李烨|马华|李淑梅",
+    "13|王力权2人|孔德华|王瑛洛|戚晓军|李敬芳|于芹|陈旭国|李丹2人",
+    "15|金东华|郭苏贤|曾劲松|杨海鹏|潘海英|董国家|粟雄飞|康征|邵卫东|蔡庆华",
+    "17|刘顺庆|王亮|王洪森|樊春香|董湘剑|刘青|张俊国2人|韩荣海|杨友明",
+    "19|王春兰|么立新|王春生|代德胜|王杨|樊瑞祥|樊瑞华|王芳|樊军2人",
+    "21|杜长安3人|杜丽丽3人|杜长新4人",
+    "23|刘和庆|孟庆宇|梁建新|孙巍|陈宇|李丽丽|迟磊|肖恩|刘志康|陈志会",
+    "25|李贺存3人|王泽臣|王鑫浩|王存鹏|孙云清|于天翔|晁浩然|付日新",
+    "27|秦奎|孙志远|卢春余|邢卫东|高健2人|邱振林|詹晓光|王宏|刘兵",
+    "29|杨勇|王红艳|李松林|张文|赵家朋|史宝驹|于铁|程飞|孙中雨|卢晓会",
+    "31|孙国庆|姜绍臣|彭海滨|张松水|潘超|赵秀君|邱俊杰|王玉华|汪双英2人",
+    "33|张海东|刘立滨|崔彦明|高玉财2人|刘少斌|付立红2人|陈光|张波",
+    "35|孙才昌|夏尊平|田川|王井龙|黄玉国|王海佳|李太林2人|王海峰|孙延生",
+    "37|赵明鹏2人|卓如培|汤海洲|李海|王晓亮|姚凤彪|黄义春|王全风|张力",
+    "39|方旭|贺艺鹏2人|李义梁|孙英文|李国庆|于鹏2人|赵祥辉|齐万军",
+    "41|孟凡和|施占学2人|王迪2人|崔宝库|王林|李云振|朱鹏2人",
+    "43|杜晓磊5人|杜小双2人|杜晓敏4人",
+    "45|苑耕晨|魏晓萍|魏春艳|幺博|李和江|王祝祥2人|魏春华|赵小庆|赵加河",
+    "47|尹启超|安柏丰|侯仰奎|陈飞|孙昌哲|龚伟鹏|贾福军|李鸿明|刘涛|姜野",
+    "49|于翠|王体智|马登奎|姜志英|刘新华|秦弘|顾继雨|魏建勋|刘建一|张善祥",
+    "51|崔晓军|李海涛|刘强|魏振华2人|盖力平|付志杰2人|薛广洲2人",
+    "53|刘勇军|韩晓娟2人|赵敏|董文胜3人|刘宇|陈志君2人",
+    "55|刘志超|曹津|李德奇|邹存宝|兰丽丽2人|陈晓明|王国良|李群|陈滨",
+    "59|李少波|赵振涛|吴晶|李飞|汤杰|刘凌涛|李磊|丛雷2人|费家强",
+    "61|范红军|吴建伟|吴杰|王佳2人|李刚|路天辉|冯秀梅|范明英|李明凤",
+    "63|杨义全|赵海波|张忠慧|李春波2人|韩明雷|阴祖新|车军|孙鹏凯|李凯",
+    "65|张玉春3人|于力2人|慈文宇2人|张彦峰|靳长春|范佳尧",
+    "67|孔繁坤2人|薛紫彤|张林海|陈冠岐|邓振涛|杜安平|朱晓琳|于鹏聪|董强",
+    "2|温兰英|史连|吴永晶|董清|谢金芝|谢金华|刘义|王桂芬|王滨燕|杨立敏",
+    "6|王霞|秦威|吴淑华|王贵君|吴成龙|吴成文|刘春英|吴成军|王宝东|郝世荣",
+    "8|唐可|吕翘楚|张翔宇|孙斌馨|丁天姝|康可馨|崔海燕|姜春梅|张艺锦|陈卓然",
+    "10|于福纯|张旭|吴志超|王堃|王晨鸣|王媛|张萌|高远|李博龙|亢思远",
+    "12|黄建斌|陈勤|赵丛新|刘春红|徐春燕|孙明宗|汪晶|郑金龙|闫佰娟",
+    "16|任丹迪|刘艳华|王淑青|范淑丽|王树丽|胡丽娟|张晓萍|陈爽|李艳杰|吴春红",
+    "18|付广山|张国华|付广强|张国芬|宋彩华|付博伦|李方园|付佳慈",
+    "20|李祥君|崔立滨|崔德臣|王海明|闫伟光|苏德仁|耿兴业|东佳刘总|王海军|都基辉",
+    "22|齐翠莲|臧立荣|路金芳|张莹|李宝霞|徐景华|黄全芳|王小玉|霍秀玲|顾强",
+    "26|杨韫哲|刘东远|刘玉生|孙晓英|国贸王颖|阳光副总|夏长军|申善民|曾志豪|隋井亮",
+    "28|王萍|方元翠|江庆荣|周艳茹|王丽霞|王景华|苏丽丽|王建英|华丽隔架张总|刘玉霞",
+    "30|曹凤秋|石云起|云隆黄丹丹|魏振博|李宇峰|宋娇|韩晓波|荆通|李磊|杨杰",
+    "32|李启航|郑加权|肖本超|李朝玉|嘉亿黄丹丹|张建军|吴冬|孙小明|陈明杰",
+    "36|张宝伟|孙娇月|王壮滨|董玉琴|张立群|宁红雷|纪林平|郑雪寒|陈民|赵全胜",
+    "38|谢雅杰|亢文成|陈丽|王涛|王晨阳|史家宁|石俊兰|徐凤英|孙小平|邸明波",
+    "40|吕学艳|齐向阳|王兴雨|王兴权|王兴无|王凤玖|吕学坤|吕学文|曹广亮|李庆爱",
+    "42|史志锐|王艳|史佳鑫|史春艳|问志远|王宝库|郑祥满|王兰玲|邵力孜|吴凤荣",
+    "46|王惠民|付立岩|金志刚|郑贵元|徐永军|王文良|闫旭东|王战滨|冷利|张本军",
+    "48|张松|姚志伟|王文东|徐春艳|王中源|徐京育|杨东旭|袁韬|蒋秋生|尹京",
+    "50|李亚彬|吴树忠|魏克纯|丁久祥|周金龙|周强|涂梦钧|蓝钱叶|齐春霖|田大力",
+    "52|秦静|孙本良|白彦国|赵艳红|李树勇|顾家恒|刘小春|武文松|李成新|王春颖",
+    "56|赵磊|董光明|吴禹豪|康佳|邹云霄|蔺鹏|翟丹|刘丕志|林建和|陈丽燕",
+    "58|徐亚彬|崔乐|钟辉|钟玉发|韩宝全|王尧|孙彦斌|吴吉雨|宗洪刚|栾万志",
+    "60|骆宏波|邓禹|王鑫宇|李忠海|柳博|张建忠|朱海洋|刘光亮|闫长红|温树林",
+    "62|张连清|张永军|张峰|邢秀清|景全|刘海涛|刘宏伟|郭虎|王存|张伟",
+    "66|邢长明|邹永周|邢国良|联盛闻总|杜冬|李春节|范林涛|梁世泽|蔡伯军|庞春平",
+    "68|郑艳|刘焕为|李红玉|秦丽莉|邸铭志|董以华|李宝昌|潘涛|徐桂琴|杨红梅",
+    "70|赵菊香|刘世莉|苗春玲|刘淑娟|曲世敏|张心刚|刘建军|张臣奎|赵万君|李秀艳",
+    "72|张金权|董刚|岳春杰|王纪龙|贾涛|李伟清|李宝山|庞新生|苑鹏飞|秦晓峰",
+    "76|刘顺庆|樊云飞|姚岵春|李想|徐宗旺|王海达|李彦龙|郭秀春|李浩轩|付世界",
+    "78|吴伟东|王琳|吴本谦|吴本合|吴本轩|谢海令|刘巍巍|孙建玉|王伟|王军",
+    "80|谢雅君|谢鹤令|邵连云|谢冬龄|邵连国|耿秀杰|邵连芳|徐宝玉|谢雅芬|张振生",
+    "82|郭美丽|李忠记|郭宝生|庞静|郭宝起|张丽红|郭美君|王晓明|郭美兰|郝玉华",
+    "86|吴小丽|史亚真|史亚芬|孟宪军|史志龙|石百庆|吴春辉|吴春英|史亚琴|孟庆萍",
+    "88|宋子涛|宋广良|赵刚|李岩|闫世力|刘振山|严廷斌|李铁林|申云海|韩丞育",
+    "90|史欣怡|史志伟|张坤|张春霞|潘东|李慧群|李慧峰|吴雨泽|陆平|吴岩松",
+    "92或57|廉志华|张彦光|李耸|和鑫司机|和德司机|袁野",
 ];
+
+function normalizeGuestName(name) {
+    return String(name).trim().replace(/\s+/g, "").replace(/[（(]?\d+人[）)]?$/, "");
+}
+
+function toPlainPinyin(text) {
+    return pinyinPro.pinyin(text, { toneType: "none", v: true }).replace(/\s+/g, "");
+}
+
+function findGuestsByInput(inputRaw) {
+    const normalizedInput = normalizeGuestName(inputRaw);
+    const inputPinyin = toPlainPinyin(normalizedInput);
+
+    const exactMatches = weddingDatabase.filter(guest => {
+        return (
+            guest.name === inputRaw ||
+            guest.normalizedName === normalizedInput ||
+            guest.normalizedPinyin === inputPinyin
+        );
+    });
+
+    if (exactMatches.length > 0) {
+        return exactMatches;
+    }
+
+    return weddingDatabase.filter(guest => {
+        return (
+            guest.name.includes(inputRaw) ||
+            guest.normalizedName.includes(normalizedInput) ||
+            guest.normalizedPinyin.includes(inputPinyin)
+        );
+    });
+}
+
+function refreshScrollHint() {
+    const card = document.getElementById("scrollCard");
+    if (!card) {
+        return;
+    }
+
+    const canScroll = card.scrollHeight - card.clientHeight > 12;
+    card.classList.toggle("can-scroll", canScroll);
+    card.classList.toggle("scrolled", !canScroll || card.scrollTop > 8);
+}
+
+const weddingDatabase = seatingSource.flatMap(line => {
+    const [table, ...names] = line.split("|").map(item => item.trim()).filter(Boolean);
+    return names.map(name => {
+        const normalizedName = normalizeGuestName(name);
+        return {
+            name,
+            normalizedName,
+            seat: `${table}号桌`,
+            normalizedPinyin: toPlainPinyin(normalizedName)
+        };
+    });
+});
 
 function createPetals() {
     const container = document.getElementById("petalContainer");
@@ -339,31 +511,15 @@ function executeSearch() {
         return;
     }
 
-    // 模糊音匹配
-    const inputPinyin = pinyinPro.pinyin(inputRaw, { toneType: 'none', v: true }).replace(/\s+/g, '');
-
-    const matchedGuests = weddingDatabase.filter(guest => {
-        if (guest.name === inputRaw) return true;
-        const dbPinyin = pinyinPro.pinyin(guest.name, { toneType: 'none', v: true }).replace(/\s+/g, '');
-        return dbPinyin === inputPinyin;
-    });
+    const matchedGuests = findGuestsByInput(inputRaw);
 
     if (matchedGuests.length > 0) {
         let htmlContent = "";
         
         matchedGuests.forEach(guest => {
-            // 智能处理手机号后缀：有就截取后4位并套上括号，没有就变为空字符串
-            let tailDisplay = "";
-            if (guest.phone && String(guest.phone).trim().length >= 4) {
-                const pStr = String(guest.phone).trim();
-                const lastFour = pStr.substring(pStr.length - 4);
-                tailDisplay = `<span class="phone-tail">（${lastFour}）</span>`;
-            }
-
-            // 多个结果在同一个大卷轴内部以 match-item 形式平铺
             htmlContent += `
                 <div class="match-item">
-                    <div class="guest-title">尊贵的贤朋 <span class="guest-highlight">${guest.name}</span>${tailDisplay}：</div>
+                    <div class="guest-title">尊贵的贤朋 <span class="guest-highlight">${guest.name}</span>：</div>
                     <div style="margin-top:4px; font-size:14px;">阖府统请，您的席设在：</div>
                     <span class="seat-badge">🌹 ${guest.seat}</span>
                 </div>
@@ -383,6 +539,7 @@ function executeSearch() {
     container.classList.add("open");
     // 每次重新查询时，自动将列表滚动回顶部
     card.scrollTop = 0;
+    refreshScrollHint();
 }
 
 document.getElementById("guestName").addEventListener("keypress", function(e) {
@@ -392,6 +549,7 @@ document.getElementById("guestName").addEventListener("keypress", function(e) {
     }
 });
 
+document.getElementById("scrollCard").addEventListener("scroll", refreshScrollHint);
 window.addEventListener("DOMContentLoaded", createPetals);
 </script>
 
