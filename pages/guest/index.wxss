@@ -1,0 +1,119 @@
+.guest-shell {
+  min-height: 100vh;
+  background-repeat: no-repeat;
+}
+
+.info-banner-card {
+  background: var(--gold-soft);
+  border-color: var(--border);
+}
+
+.info-banner-card .section-title::before {
+  content: "◇ ";
+}
+
+.guest-hero {
+  border-top: 8rpx solid var(--accent);
+}
+
+.guest-type-tag {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  margin-top: 18rpx;
+  padding: 10rpx 24rpx;
+  border-radius: 999rpx;
+  background: var(--accent);
+  color: var(--gold-light);
+  font-size: 22rpx;
+  font-weight: 700;
+  border: 1rpx solid var(--gold);
+  letter-spacing: 0.06em;
+}
+
+.guest-panel {
+  border-top: 4rpx solid var(--gold);
+}
+
+.guest-results {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+  border-top: 4rpx solid var(--gold);
+}
+
+.result-scroll {
+  max-height: 520rpx;
+}
+
+.result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+  padding: 32rpx 28rpx;
+  border-bottom: 1rpx dashed var(--border-light);
+}
+
+.result-item:last-child {
+  border-bottom: 0;
+}
+
+.result-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.result-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--accent-deep);
+  letter-spacing: 0.04em;
+}
+
+.result-tip {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+}
+
+.result-seat {
+  flex-shrink: 0;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--accent);
+  padding: 8rpx 20rpx;
+  border-radius: 12rpx;
+  background: var(--accent-soft);
+  border: 1rpx solid var(--border-light);
+}
+
+.scroll-hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 18rpx;
+  text-align: center;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--gold-light);
+  background: linear-gradient(transparent, rgba(110, 21, 36, 0.88) 50%);
+  letter-spacing: 0.06em;
+}
+
+.scroll-hint-arrow {
+  margin-right: 6rpx;
+}
+
+.theme-search-btn {
+  color: var(--gold-light) !important;
+}
+
+.theme-search-btn::after {
+  border: none;
+}
+
+.guest-footer {
+  border-top: 4rpx solid var(--gold);
+}

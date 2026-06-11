@@ -1,0 +1,74 @@
+<view class="page-shell">
+  <view class="hero-card">
+    <view class="page-title">标准模板导入</view>
+    <view class="page-subtitle">
+      首版只支持"一行一桌"格式：第 1 列是桌号，第 2 列开始是这一桌的宾客姓名。
+    </view>
+  </view>
+
+  <view class="section-block panel-card panel-body">
+    <view class="section-header">
+      <view class="section-title">模板示例</view>
+      <view class="section-desc">A 列为桌号，B 列及之后为该桌宾客姓名。</view>
+    </view>
+
+    <view class="sample-table">
+      <view class="sample-table-header">
+        <view class="sample-col sample-col-table">桌号</view>
+        <view class="sample-col sample-col-names">宾客姓名</view>
+      </view>
+      <view class="sample-table-row">
+        <view class="sample-col sample-col-table">1号桌</view>
+        <view class="sample-col sample-col-names">张三、李四、王五</view>
+      </view>
+      <view class="sample-table-row">
+        <view class="sample-col sample-col-table">2号桌</view>
+        <view class="sample-col sample-col-names">赵六、钱七</view>
+      </view>
+      <view class="sample-table-row sample-table-row-last">
+        <view class="sample-col sample-col-table">贵宾席</view>
+        <view class="sample-col sample-col-names">陈八、周九、吴十</view>
+      </view>
+    </view>
+
+    <view class="button-row">
+      <button class="cta-button" bindtap="onChooseExcel">从微信聊天选择 Excel</button>
+    </view>
+  </view>
+
+  <block wx:if="{{preview}}">
+    <view class="section-block panel-card panel-body">
+      <view class="section-header">
+        <view class="section-title">导入预览</view>
+      </view>
+      <view class="helper-text">文件：{{fileName}}</view>
+      <view class="helper-text">共 {{preview.tableCount}} 桌，{{preview.guestCount}} 人。</view>
+      <block wx:if="{{preview.warnings && preview.warnings.length}}">
+        <view class="field-group">
+          <view class="field-label">提醒</view>
+          <view wx:for="{{preview.warnings}}" wx:key="*this" class="helper-text">{{item}}</view>
+        </view>
+      </block>
+      <view class="field-group">
+        <view class="field-label">前几桌预览</view>
+        <view class="preview-table">
+          <view class="preview-table-header">
+            <view class="preview-col preview-col-table">桌号</view>
+            <view class="preview-col preview-col-names">宾客</view>
+          </view>
+          <view
+            wx:for="{{preview.sampleRows}}"
+            wx:key="tableLabel"
+            class="preview-table-row {{index === preview.sampleRows.length - 1 ? 'preview-table-row-last' : ''}}"
+          >
+            <view class="preview-col preview-col-table">{{item.tableLabel}}</view>
+            <view class="preview-col preview-col-names">{{item.names}}</view>
+          </view>
+        </view>
+      </view>
+      <view class="button-row">
+        <button class="warn-button" bindtap="onCommitImport">确认覆盖导入</button>
+      </view>
+    </view>
+  </block>
+</view>

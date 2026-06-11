@@ -1,0 +1,81 @@
+<view class="page-shell">
+  <view class="hero-card">
+    <view class="hero-glow"></view>
+    <view class="hero-inner">
+      <view class="brand-mark">席</view>
+      <view class="hero-text">
+        <view class="page-title">把宴会找座做成自己的活动页</view>
+        <view class="page-subtitle">
+          登录后即可创建婚礼、宴请、团建等活动，导入名单、配置主题，并生成专属分享海报。
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <block wx:if="{{!user && !loading}}">
+    <view class="section-block">
+      <login-panel
+        title="先登录，再开始创建"
+        desc="登录后会自动注册为平台用户，你创建的活动、名单和海报都会保存在自己的账号里。"
+        bind:success="handleLoginSuccess"
+      />
+    </view>
+  </block>
+
+  <block wx:if="{{user}}">
+    <view wx:if="{{user.isLocalMockUser}}" class="info-banner-card">
+      <view class="info-banner-title">当前为本地调试登录</view>
+      <view class="info-banner-desc">云函数还未部署时，会先用本地测试用户继续体验页面流程。部署云函数后会自动切回正式登录。</view>
+    </view>
+
+    <view class="select-section">
+      <view class="select-head">
+        <view class="select-head-mark"></view>
+        <view class="select-head-title">选择活动类型</view>
+      </view>
+      <view class="select-desc">先选一个活动类型，我们会带上默认主题色，后面你还可以继续自定义。</view>
+
+      <view class="type-grid">
+        <view
+          wx:for="{{builtinTypes}}"
+          wx:key="key"
+          class="type-card"
+          hover-class="type-card--hover"
+          hover-stay-time="120"
+          bindtap="onCreateEvent"
+          data-key="{{item.key}}"
+          data-label="{{item.label}}"
+          data-color="{{item.color}}"
+          data-icon="{{item.icon}}"
+          data-accent="{{item.accent}}"
+          data-soft="{{item.soft}}"
+          data-deep="{{item.deep}}"
+          data-text-primary="{{item.textPrimary}}"
+          data-text-secondary="{{item.textSecondary}}"
+          data-page-background="{{item.pageBackground}}"
+          data-hero-background="{{item.heroBackground}}"
+          data-card-background="{{item.cardBackground}}"
+          data-card-border="{{item.cardBorder}}"
+          data-type-style="{{item.typeStyle}}"
+          style="--type-color: {{item.color}}; --type-soft: {{item.soft}};"
+        >
+          <view class="type-mesh"></view>
+          <view class="type-inner">
+            <view class="type-icon">{{item.icon}}</view>
+            <view class="type-meta">
+              <view class="type-label">{{item.label}}</view>
+              <view class="type-tip">{{item.typeStyle}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="cta-section">
+      <navigator class="cta-pill" url="/pages/event-list/index" hover-class="cta-pill--hover">
+        <text>我的活动</text>
+        <text class="cta-pill-arrow">→</text>
+      </navigator>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,95 @@
+<view
+  class="page-shell guest-shell"
+  style="{{event && event.backgroundTempUrl ? 'background-image: linear-gradient(rgba(245,235,224,0.55), rgba(245,235,224,0.94)), url(' + event.backgroundTempUrl + '); background-size: cover; background-position: center top;' : (event && event.themeColor ? 'background: linear-gradient(180deg, ' + event.themeColor + '18 0%, #f5ebe0 30%);' : '')}}"
+>
+  <block wx:if="{{loading}}">
+    <view class="hero-card">
+      <view class="skeleton-block skeleton-title"></view>
+      <view class="skeleton-block skeleton-line"></view>
+    </view>
+    <view class="section-block panel-card panel-body">
+      <view class="skeleton-block skeleton-line"></view>
+      <view class="skeleton-block skeleton-card" style="height: 88rpx; margin-top: 20rpx;"></view>
+    </view>
+  </block>
+
+  <block wx:if="{{!user && !loading}}">
+    <login-panel
+      title="登录后查看活动座位"
+      desc="登录后可进入该活动页面查询座位，同时也能回到首页创建你自己的活动。"
+      bind:success="handleLoginSuccess"
+    />
+  </block>
+
+  <block wx:if="{{user && event}}">
+    <view wx:if="{{user.isLocalMockUser}}" class="section-block panel-card panel-body info-banner-card">
+      <view class="section-title">当前为本地调试登录</view>
+      <view class="section-desc">部署云函数前，这里会使用本地测试用户进入页面，方便先调样式和交互。</view>
+    </view>
+
+    <view
+      class="hero-card guest-hero"
+      style="{{event.themeColor ? 'border-top-color: ' + event.themeColor + ';' : ''}}"
+    >
+      <view class="page-title">{{event.title || event.name}}</view>
+      <view class="page-subtitle">{{event.subtitle || "欢迎入席 · 输入姓名查询座位"}}</view>
+      <view wx:if="{{event.typeLabel && !preview}}" class="guest-type-tag" style="{{event.themeColor ? 'background:' + event.themeColor + ';' : ''}}">
+        {{event.typeLabel}}
+      </view>
+    </view>
+
+    <view class="section-block panel-card panel-body guest-panel" style="{{event.themeColor ? 'border-top-color:' + event.themeColor + ';' : ''}}">
+      <input
+        class="field-input guest-input"
+        placeholder="请输入姓名"
+        value="{{query}}"
+        bindinput="onInputQuery"
+        confirm-type="search"
+        bindconfirm="onSearch"
+        style="{{event.themeColor ? 'border-color: transparent;' : ''}}"
+      />
+      <view class="button-row">
+        <button
+          class="cta-button theme-search-btn"
+          bindtap="onSearch"
+          style="{{event.themeColor ? 'background: ' + event.themeColor + ';' : ''}}"
+        >
+          查询座位
+        </button>
+      </view>
+    </view>
+
+    <block wx:if="{{results.length}}">
+      <view class="section-block panel-card guest-results">
+        <scroll-view class="result-scroll" scroll-y bindscroll="onScrollResults">
+          <view
+            wx:for="{{results}}"
+            wx:key="guestNameRaw + tableLabel"
+            class="result-item"
+          >
+            <view class="result-left">
+              <view class="result-name">{{item.guestNameRaw}}</view>
+              <view class="result-tip">您的席位在</view>
+            </view>
+            <view class="result-seat" style="{{event.themeColor ? 'color:' + event.themeColor + ';' : ''}}">{{item.tableLabel}}</view>
+          </view>
+        </scroll-view>
+        <view wx:if="{{canScrollHint && !hintDismissed}}" class="scroll-hint" style="{{event.themeColor ? 'background: linear-gradient(transparent, ' + event.themeColor + 'dd 50%);' : ''}}">
+          <text class="scroll-hint-arrow">↑</text> 上滑查看更多
+        </view>
+      </view>
+    </block>
+
+    <block wx:if="{{emptyMessage}}">
+      <view class="section-block panel-card empty-state">{{emptyMessage}}</view>
+    </block>
+
+    <view class="section-block panel-card panel-body guest-footer">
+      <view class="section-title">我也想创建一个活动</view>
+      <view class="section-desc">回到首页，选择活动类型，导入你自己的名单并生成分享海报。</view>
+      <view class="button-row">
+        <button class="ghost-button" bindtap="onGoHome">回到首页创建活动</button>
+      </view>
+    </view>
+  </block>
+</view>

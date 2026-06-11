@@ -1,0 +1,19 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/event-edit/index",
+    "pages/event-import/index",
+    "pages/event-list/index",
+    "pages/guest/index",
+    "pages/poster/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "活动找座",
+    "navigationBarBackgroundColor": "#fff9f0",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f5ebe0",
+    "backgroundTextStyle": "dark"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

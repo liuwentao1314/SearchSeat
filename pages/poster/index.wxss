@@ -1,0 +1,85 @@
+.poster-frame {
+  display: flex;
+  justify-content: center;
+  padding: 8rpx 0 16rpx;
+}
+
+.poster-ornate {
+  position: relative;
+  width: 100%;
+  padding: 28rpx;
+  background: linear-gradient(145deg, rgba(176, 138, 62, 0.12) 0%, rgba(148, 1, 35, 0.06) 100%);
+  border: 2rpx solid var(--gold);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-md);
+}
+
+.poster-ornate-corner {
+  position: absolute;
+  width: 32rpx;
+  height: 32rpx;
+  border-color: var(--accent);
+  border-style: solid;
+}
+
+.poster-ornate-tl {
+  top: 12rpx;
+  left: 12rpx;
+  border-width: 3rpx 0 0 3rpx;
+}
+
+.poster-ornate-tr {
+  top: 12rpx;
+  right: 12rpx;
+  border-width: 3rpx 3rpx 0 0;
+}
+
+.poster-ornate-bl {
+  bottom: 12rpx;
+  left: 12rpx;
+  border-width: 0 0 3rpx 3rpx;
+}
+
+.poster-ornate-br {
+  bottom: 12rpx;
+  right: 12rpx;
+  border-width: 0 3rpx 3rpx 0;
+}
+
+.poster-card {
+  padding: 16rpx;
+  border: 1rpx solid var(--border);
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.poster-canvas {
+  width: 720rpx;
+  height: 1280rpx;
+  position: fixed;
+  left: -2000rpx;
+  top: -2000rpx;
+}
+
+.poster-image {
+  width: 100%;
+  border-radius: 12rpx;
+  display: block;
+  background: #fffdf8;
+  border: 1rpx solid var(--border-light);
+}
+
+.poster-placeholder {
+  padding: 120rpx 32rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--text-tertiary);
+  background: var(--surface-muted);
+  border-radius: 12rpx;
+  border: 1rpx dashed var(--border);
+}
+
+.warning-card {
+  background: var(--gold-soft);
+  border-color: var(--border);
+}

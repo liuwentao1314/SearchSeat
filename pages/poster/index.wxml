@@ -1,0 +1,35 @@
+<view class="page-shell">
+  <view class="hero-card">
+    <view class="page-title">活动分享海报</view>
+    <view class="page-subtitle">保存到相册后即可转发到微信好友或群聊。</view>
+  </view>
+
+  <view class="section-block poster-frame">
+    <view class="poster-ornate">
+      <view class="poster-ornate-corner poster-ornate-tl"></view>
+      <view class="poster-ornate-corner poster-ornate-tr"></view>
+      <view class="poster-ornate-corner poster-ornate-bl"></view>
+      <view class="poster-ornate-corner poster-ornate-br"></view>
+      <view class="panel-card poster-card">
+        <canvas
+          canvas-id="posterCanvas"
+          class="poster-canvas"
+          style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;"
+          width="{{canvasWidth}}"
+          height="{{canvasHeight}}"
+        ></canvas>
+        <image wx:if="{{posterTempPath}}" class="poster-image" mode="widthFix" src="{{posterTempPath}}" />
+        <view wx:else class="poster-placeholder">海报生成中...</view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{warning}}" class="section-block panel-card panel-body warning-card">
+    <view class="section-title">当前提示</view>
+    <view class="section-desc">{{warning}}</view>
+  </view>
+
+  <view class="section-block">
+    <button class="cta-button" bindtap="onSavePoster">保存海报到相册</button>
+  </view>
+</view>

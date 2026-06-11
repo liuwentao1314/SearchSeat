@@ -1,0 +1,7 @@
+<view class="panel-card login-panel">
+  <view class="login-seal">席</view>
+  <view class="login-title">{{title}}</view>
+  <view class="login-desc">{{desc}}</view>
+  <view class="login-helper">开发调试和正式使用都可以先直接登录，头像昵称拿不到时会自动使用默认值。</view>
+  <button class="cta-button" bindtap="onGetUserProfile">{{buttonText}}</button>
+</view>

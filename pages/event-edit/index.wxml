@@ -1,0 +1,104 @@
+<view class="page-shell">
+  <block wx:if="{{event}}">
+    <view class="hero-card">
+      <view class="page-title">{{event.name}}</view>
+      <view class="page-subtitle">{{event.typeLabel}} · 最近更新于 {{event.updatedLabel}}</view>
+      <view class="status-line">
+        <view class="{{event.statusMeta.className}}">{{event.statusMeta.label}}</view>
+        <view class="helper-text">发布状态：{{event.publishedLabel}}</view>
+      </view>
+    </view>
+
+    <view class="section-block panel-card panel-body">
+      <view class="section-header">
+        <view class="section-title">基础信息</view>
+      </view>
+
+      <view class="field-group">
+        <view class="field-label">活动名称</view>
+        <input class="field-input" value="{{event.name}}" bindinput="onInputName" />
+      </view>
+
+      <view class="field-group">
+        <view class="field-label">页面标题</view>
+        <input class="field-input" value="{{event.title}}" bindinput="onInputTitle" />
+      </view>
+
+      <view class="field-group">
+        <view class="field-label">页面副标题</view>
+        <textarea class="field-textarea" value="{{event.subtitle}}" bindinput="onInputSubtitle"></textarea>
+      </view>
+
+      <view class="field-group">
+        <view class="field-label">主题色</view>
+        <view class="helper-text">点击色板直接选择主题色，无需手动输入。</view>
+        <view class="color-grid">
+          <view
+            wx:for="{{themeSwatches}}"
+            wx:key="*this"
+            class="color-swatch {{event.themeColor === item ? 'color-swatch-active' : ''}}"
+            data-color="{{item}}"
+            bindtap="onPickThemeColor"
+            style="background: {{item}};"
+          >
+            <view wx:if="{{event.themeColor === item}}" class="color-swatch-check">✓</view>
+          </view>
+        </view>
+        <view class="helper-text">当前主题色：{{event.themeColor}}</view>
+      </view>
+    </view>
+
+    <view class="section-block panel-card panel-body">
+      <view class="section-header">
+        <view class="section-title">背景与分享风格</view>
+        <view class="section-desc">背景图会用于查座页氛围和分享海报底图。</view>
+      </view>
+      <view class="button-row">
+        <button class="ghost-button" loading="{{uploadingBackground}}" bindtap="onChooseBackground">上传背景图</button>
+        <button class="ghost-button" bindtap="onGeneratePoster">生成分享海报</button>
+      </view>
+      <view class="field-group">
+        <view class="field-label">当前背景预览</view>
+        <block wx:if="{{event.backgroundPreviewUrl || event.backgroundTempUrl}}">
+          <image
+            class="background-preview"
+            mode="aspectFill"
+            src="{{event.backgroundPreviewUrl || event.backgroundTempUrl}}"
+          />
+          <view class="helper-text">已选择背景图，保存草稿后会同步用于查座页和分享海报。</view>
+        </block>
+        <view wx:else class="background-empty">暂未上传背景图</view>
+      </view>
+    </view>
+
+    <view class="section-block panel-card panel-body">
+      <view class="section-header">
+        <view class="section-title">名单与发布</view>
+        <view class="section-desc">当前名单：{{event.tableCount || 0}} 桌，{{event.guestCount || 0}} 人。</view>
+      </view>
+      <view class="button-row">
+        <button class="ghost-button" bindtap="onGoImport">导入名单</button>
+        <button class="ghost-button" bindtap="onGoPreview">预览查座页</button>
+      </view>
+      <view class="button-row">
+        <button class="cta-button" loading="{{saving}}" bindtap="onSaveDraft">保存草稿</button>
+        <button class="warn-button" loading="{{publishing}}" bindtap="onPublish">发布活动</button>
+      </view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="hero-card">
+      <view class="skeleton-block skeleton-title"></view>
+      <view class="skeleton-block skeleton-line"></view>
+    </view>
+    <view class="section-block panel-card panel-body">
+      <view class="skeleton-block skeleton-line"></view>
+      <view class="skeleton-block skeleton-line" style="width: 60%; margin-top: 16rpx;"></view>
+      <view class="skeleton-block skeleton-card"></view>
+    </view>
+    <view class="section-block panel-card panel-body">
+      <view class="skeleton-block skeleton-card"></view>
+    </view>
+  </block>
+</view>

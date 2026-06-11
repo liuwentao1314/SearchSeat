@@ -1,0 +1,51 @@
+.color-grid {
+  margin-top: 16rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18rpx;
+}
+
+.color-swatch {
+  width: 68rpx;
+  height: 68rpx;
+  border-radius: 50%;
+  border: 3rpx solid var(--gold-light);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.color-swatch-active {
+  box-shadow: 0 0 0 4rpx var(--gold-soft), 0 0 0 6rpx var(--gold);
+  transform: scale(1.05);
+}
+
+.color-swatch-check {
+  color: #ffffff;
+  font-size: 26rpx;
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.background-preview {
+  width: 100%;
+  height: 280rpx;
+  margin-top: 16rpx;
+  border-radius: var(--radius-card);
+  display: block;
+  background: var(--surface-muted);
+  border: 2rpx solid var(--border);
+  box-shadow: inset 0 0 0 4rpx rgba(255, 252, 245, 0.6);
+}
+
+.background-empty {
+  margin-top: 16rpx;
+  padding: 52rpx 28rpx;
+  border-radius: var(--radius-card);
+  background: var(--surface-muted);
+  border: 1rpx dashed var(--border);
+  color: var(--text-tertiary);
+  text-align: center;
+  font-size: 24rpx;
+}
