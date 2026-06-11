@@ -12,10 +12,15 @@ Page({
     user: null,
     loading: true,
     builtinTypes: BUILTIN_EVENT_TYPES,
+    showLogin: false,
+    loginDesc: "登录后即可创建活动、保存配置并查看活动。",
     quickLinks: [
       { key: "mine", label: "我的活动", path: "/pages/event-list/index" }
     ]
   },
+
+  pendingEventType: null,
+  pendingAction: null,
 
   onShow() {
     this.bootstrap();
@@ -53,6 +58,32 @@ Page({
     }
   },
 
+  noop() {},
+
+  openLogin(desc) {
+    this.setData({
+      showLogin: true,
+      loginDesc: desc || "登录后即可创建活动、保存配置并查看活动。"
+    });
+  },
+
+  onCloseLogin() {
+    this.pendingEventType = null;
+    this.pendingAction = null;
+    this.setData({ showLogin: false });
+  },
+
+  onGoMyEvents() {
+    if (!getStoredUser()) {
+      this.pendingAction = "myEvents";
+      this.openLogin("登录后即可查看和管理你创建的活动。");
+      return;
+    }
+    wx.navigateTo({
+      url: "/pages/event-list/index"
+    });
+  },
+
   async handleLoginSuccess(event) {
     try {
       const user = await ensureUserProfile({
@@ -62,8 +93,9 @@ Page({
       if (!user) {
         throw new Error("登录结果为空");
       }
-      this.setData({ user });
-      this.bootstrap();
+      this.setData({ user, showLogin: false });
+      await this.bootstrap();
+      this.runPendingAction();
     } catch (error) {
       wx.showToast({
         title: error.message || "登录失败",
@@ -72,7 +104,24 @@ Page({
     }
   },
 
-  async onCreateEvent(event) {
+  runPendingAction() {
+    const pendingType = this.pendingEventType;
+    const pendingAction = this.pendingAction;
+    this.pendingEventType = null;
+    this.pendingAction = null;
+
+    if (pendingType) {
+      this.createEventWithType(pendingType);
+      return;
+    }
+    if (pendingAction === "myEvents") {
+      wx.navigateTo({
+        url: "/pages/event-list/index"
+      });
+    }
+  },
+
+  onCreateEvent(event) {
     const type = {
       key: event.currentTarget.dataset.key,
       label: event.currentTarget.dataset.label,
@@ -89,10 +138,20 @@ Page({
       cardBorder: event.currentTarget.dataset.cardBorder,
       typeStyle: event.currentTarget.dataset.typeStyle
     };
-    if (!type) {
+    if (!type.key) {
       return;
     }
 
+    if (!getStoredUser()) {
+      this.pendingEventType = type;
+      this.openLogin("登录后即可创建活动并保存到你的账号里。");
+      return;
+    }
+
+    this.createEventWithType(type);
+  },
+
+  async createEventWithType(type) {
     try {
       wx.showLoading({ title: "创建中" });
       const result = await callFunction("createEvent", {

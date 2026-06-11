@@ -259,3 +259,38 @@ page {
 .cta-pill-arrow {
   font-size: 30rpx;
 }
+
+/* ===== Login modal ===== */
+.login-modal-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+  box-sizing: border-box;
+  background: rgba(30, 27, 24, 0.45);
+}
+
+.login-modal-body {
+  position: relative;
+  width: 100%;
+  max-width: 620rpx;
+}
+
+.login-modal-close {
+  position: absolute;
+  top: -56rpx;
+  right: 0;
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--c-on-surface);
+  font-size: 40rpx;
+  line-height: 1;
+}
